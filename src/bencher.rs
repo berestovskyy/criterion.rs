@@ -44,7 +44,8 @@ pub struct Bencher<'a, M: Measurement = WallTime> {
     pub(crate) measurement: &'a M,     // Reference to the measurement object
     pub(crate) elapsed_time: Duration, // How much time did it take to perform the iteration? Used for the warmup period.
 }
-impl<M: Measurement> Bencher<'_, M> {
+#[allow(clippy::needless_lifetimes)] // Prevents warning when 'a isn't used ("async" feature is off)
+impl<'a, M: Measurement> Bencher<'a, M> {
     /// Times a `routine` by executing it many times and timing the total elapsed time.
     ///
     /// Prefer this timing loop when `routine` returns a value that doesn't have a destructor.
@@ -388,7 +389,7 @@ pub struct AsyncBencher<'a, 'b, A: AsyncExecutor, M: Measurement = WallTime> {
     runner: A,
 }
 #[cfg(feature = "async")]
-impl<'a, 'b, A: AsyncExecutor, M: Measurement> AsyncBencher<'a, 'b, A, M> {
+impl<A: AsyncExecutor, M: Measurement> AsyncBencher<'_, '_, A, M> {
     /// Times a `routine` by executing it many times and timing the total elapsed time.
     ///
     /// Prefer this timing loop when `routine` returns a value that doesn't have a destructor.
