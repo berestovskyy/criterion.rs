@@ -6,19 +6,20 @@ on:
     branches:
       - master
 
-name: tests
+name: CI
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   config:
+    name: Configuring Rust Versions
     runs-on: ubuntu-latest
     outputs:
       msrv: "1.86.0"                # Also update `rust-version` in `Cargo.toml`
       stable: "1.93.0"              # Stable release as of 2026-02-10
       nightly: "nightly-2026-02-10"
     steps:
-      - run: echo "Configuring versions..."
+      - run: echo "Configuring Rust versions..."
 
   ci:
     needs: config
@@ -72,13 +73,16 @@ jobs:
         if: matrix.rust == needs.config.outputs.stable
         run: cargo fmt --all -- --check
 
+      - name: Install wasmtime
+        if: matrix.rust == needs.config.outputs.stable
+        run: |
+          curl https://wasmtime.dev/install.sh -sSf | bash
+          echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
       - name: Test (WASI)
         if: matrix.rust == needs.config.outputs.stable
         env:
           CARGO_TARGET_WASM32_WASIP1_RUNNER: wasmtime run --dir . --
         run: |
-          curl https://wasmtime.dev/install.sh -sSf | bash
-          echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
           rustup target add wasm32-wasip1
           cargo bench --target=wasm32-wasip1 --no-default-features -- --test
 
