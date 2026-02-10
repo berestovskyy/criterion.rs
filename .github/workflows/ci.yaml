@@ -78,7 +78,7 @@ jobs:
           CARGO_TARGET_WASM32_WASIP1_RUNNER: wasmtime run --dir . --
         run: |
           curl https://wasmtime.dev/install.sh -sSf | bash
-          source ~/.bashrc
+          echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
           rustup target add wasm32-wasip1
           cargo bench --target=wasm32-wasip1 --no-default-features -- --test
 
