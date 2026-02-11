@@ -17,7 +17,7 @@ jobs:
     outputs:
       msrv: "1.86.0"                # Also update `rust-version` in `Cargo.toml`
       stable: "1.93.0"              # Stable release as of 2026-02-10
-      nightly: "nightly-2026-02-10"
+      nightly: nightly
     steps:
       - run: echo "Configuring Rust versions..."
 
